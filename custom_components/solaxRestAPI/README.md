@@ -1,59 +1,59 @@
 # SolaX Rest API (Custom Integration)
 
-Custom Home Assistant integrace pro lokalni cteni dat ze SolaX inverteru pres vestaveny REST endpoint.
+Custom Home Assistant integration for reading local SolaX inverter data through the built-in REST endpoint.
 
-## Co integrace umi
+## Features
 
-- Cte realtime data z lokalni IP adresy inverteru.
-- Podporuje mapovaci profily (JSON), aktualne `solax_type4`.
-- Vytvari diagnosticke i merici senzory podle mapping souboru.
-- Umoznuje navazat externi senzor `grid_power` a odvodit:
+- Reads realtime data from the inverter's local IP address.
+- Supports JSON mapping profiles (currently `solax_type4`).
+- Creates diagnostic and measurement sensors from the mapping file.
+- Can use an external `grid_power` sensor and derive:
   - `grid_import_energy`
   - `grid_export_energy`
-- Obsahuje diagnosticky stav posledniho cteni API:
+- Includes a diagnostic status sensor for API fetch state:
   - `rest_api_fetch_status` = `success` / `failed` / `unknown`
 
-## Pozadavky
+## Requirements
 
 - Home Assistant
-- SolaX menic dostupny v lokalni siti
-- Znamy host (IP/hostname)
-- Heslo pro endpoint (default byva `SRCSKCLBHB`)
+- SolaX inverter reachable on the local network
+- Known host (IP/hostname)
+- Endpoint password (default is often `SRCSKCLBHB`)
 
-## Konfigurace v UI
+## Configuration In UI
 
-1. Settings -> Devices & Services -> Add Integration.
-2. Vyber `SolaX Rest API`.
-3. Vypln:
+1. Go to Settings -> Devices & Services -> Add Integration.
+2. Select `SolaX Rest API`.
+3. Fill in:
    - Host
    - Password
-   - Scan interval (minimalne 5 s)
+   - Scan interval (minimum 5 seconds)
    - Mapping profile (`solax_type4`)
-4. Pokud mapping obsahuje volitelne `entity_state` zdroje, vyber je v dalsim kroku.
+4. If the mapping contains configurable `entity_state` sources, select them in the next step.
 
-## Mapping profile
+## Mapping Profiles
 
-Integrace nacita entity ze souboru v adresari `mappings/`.
+The integration loads entities from files in `mappings/`.
 
-- Aktivni profil se uklada jako `mapping_file`.
-- Profil se muze vybrat manualne nebo automaticky podle `match` pravidel.
+- The active profile is stored as `mapping_file`.
+- A profile can be selected manually or auto-selected using `match` rules.
 
-Detailni popis struktury mappingu a seznam entit je v souboru `MAPPINGS.md`.
+For full mapping format and entity list, see `MAPPINGS.md`.
 
-## Diagnostika
+## Diagnostics
 
-Integrace publikuje diagnosticka data (`async_get_config_entry_diagnostics`) vcetne:
+The integration exposes diagnostics (`async_get_config_entry_diagnostics`) including:
 
 - `rest_api_fetch_succeeded`
 - `last_update_time`
 - `last_error`
 - `has_last_payload`
 
-Zaroven je dostupny diagnosticky sensor `REST API fetch status`.
+It also exposes the diagnostic sensor `REST API fetch status`.
 
-## Publikace pres HACS
+## Publishing Through HACS
 
-Doporuceny layout samostatneho Git repozitare:
+Recommended standalone repository layout:
 
 ```text
 <repo-root>/
@@ -66,7 +66,7 @@ Doporuceny layout samostatneho Git repozitare:
   README.md
 ```
 
-### Minimalni `hacs.json`
+### Minimal `hacs.json`
 
 ```json
 {
@@ -78,17 +78,17 @@ Doporuceny layout samostatneho Git repozitare:
 }
 ```
 
-### Dulezite pred publikaci
+### Important Before Release
 
-- Zkontroluj, ze `manifest.json` obsahuje korektni `version`.
-- Doporucene je drzet `domain` lowercase (HA best practice).
-- Vytvor release tagy (`v0.1.0`, `v0.1.1`, ...), HACS je pouziva pro update.
-- Pridej repozitar do HACS jako `Custom repository`, category `Integration`.
+- Ensure `manifest.json` contains a valid `version`.
+- Lowercase domain naming is recommended (Home Assistant best practice).
+- Create release tags (`v0.1.0`, `v0.1.1`, ...) because HACS uses them for updates.
+- Add this repository to HACS as `Custom repository`, category `Integration`.
 
-## Vyvoj
+## Development
 
-Pri upravach mapovani:
+When changing mappings:
 
-1. Uprav JSON v `mappings/`.
-2. Reloadni integraci (nebo restart HA).
-3. Over senzory a diagnostiku v Developer Tools.
+1. Edit the JSON file in `mappings/`.
+2. Reload the integration (or restart Home Assistant).
+3. Verify sensors and diagnostics in Developer Tools.

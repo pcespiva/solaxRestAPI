@@ -1,8 +1,8 @@
-# Mapping dokumentace
+# Mapping Documentation
 
-Tento dokument popisuje format mapovacich souboru v `mappings/*.json` a aktualni profil `solax_type4`.
+This document describes the mapping file format in `mappings/*.json` and the current `solax_type4` profile.
 
-## Zakladni struktura souboru
+## Basic File Structure
 
 ```json
 {
@@ -25,50 +25,50 @@ Tento dokument popisuje format mapovacich souboru v `mappings/*.json` a aktualni
 }
 ```
 
-## Polozky na urovni profilu
+## Profile-Level Fields
 
-- `version`: verze formatu mappingu.
-- `name`: citelny nazev profilu.
-- `match`: pravidla pro auto-vyber profilu podle payloadu.
-- `sensors`: seznam definic senzoru.
+- `version`: mapping format version.
+- `name`: human-readable profile name.
+- `match`: rules for automatic profile selection based on payload.
+- `sensors`: list of sensor definitions.
 
-## Pole definice senzoru
+## Sensor Definition Fields
 
-- `key` (povinne): interni identifikator senzoru.
-- `name`: zobrazene jmeno senzoru.
-- `entity_category`: napr. `diagnostic`.
-- `path`: cesta do payloadu, napr. `['data', 0]` nebo `['information', 2]`.
-- `scale`: nasobek pro prepocet hodnoty.
-- `unit`: jednotka (`W`, `kWh`, `V`, `A`, ...).
+- `key` (required): internal sensor identifier.
+- `name`: display name.
+- `entity_category`: for example `diagnostic`.
+- `path`: path inside payload, for example `['data', 0]` or `['information', 2]`.
+- `scale`: multiplier applied to the value.
+- `unit`: measurement unit (`W`, `kWh`, `V`, `A`, ...).
 - `device_class`: Home Assistant `SensorDeviceClass`.
 - `state_class`: Home Assistant `SensorStateClass`.
-- `optional`: pokud je `true`, entita je dostupna jen kdyz ma hodnotu.
-- `configurable`: umozni vybrat zdroj v config flow (pro `entity_state`).
-- `source`: alternativni zdroj misto primeho `path`.
-- `read`: rozsirene cteni (napr. skladani vice registru).
+- `optional`: if `true`, the entity is available only when a value exists.
+- `configurable`: allows source selection in config flow (for `entity_state`).
+- `source`: alternative source instead of direct `path`.
+- `read`: advanced read behavior (for example combining multiple registers).
 
-## Podporovane source typy
+## Supported `source` Types
 
-- `entity_state`: cteni hodnoty z jine entity v HA.
-- `grid_power_derived`: odvozene energie import/export z `grid_power`.
-- `rest_api_fetch_status`: stav posledniho REST cteni (`success` / `failed` / `unknown`).
+- `entity_state`: read value from another Home Assistant entity.
+- `grid_power_derived`: derived import/export energy from `grid_power`.
+- `rest_api_fetch_status`: status of the last REST API read (`success` / `failed` / `unknown`).
 
-## Podporovane read typy
+## Supported `read` Types
 
-- `combine`: slozi vysledek z vice casti.
-  - `parts`: pole casti (`path` + volitelny `factor`).
-  - `scale`: volitelny finalni prepocet.
+- `combine`: builds a value from multiple parts.
+- `parts`: list of parts (`path` + optional `factor`).
+- `scale`: optional final scaling.
 
-## Poznamky k payloadu
+## Payload Notes
 
-- API odpoved se normalizuje na lowercase top-level klice.
-- Pole `Data` je dostupne jako `data`.
-- Pole `Information` je dostupne jako `information`.
-- Textove hodnoty (napr. serial) jsou podporene a vraci se jako string.
+- API response top-level keys are normalized to lowercase.
+- `Data` is available as `data`.
+- `Information` is available as `information`.
+- Text values (for example serial numbers) are supported and returned as strings.
 
-## Profil `solax_type4`: mapovane entity
+## `solax_type4` Profile: Mapped Entities
 
-### Diagnosticke entity
+### Diagnostic Entities
 
 | Key | Name | Zdroj |
 | --- | --- | --- |
@@ -80,7 +80,7 @@ Tento dokument popisuje format mapovacich souboru v `mappings/*.json` a aktualni
 | `phase_type` | Phase type | `path: ['information', 9]` |
 | `rest_api_fetch_status` | REST API fetch status | `source: rest_api_fetch_status` |
 
-### Merici entity
+### Measurement Entities
 
 | Key | Name | Zdroj | Scale | Unit |
 | --- | --- | --- | --- | --- |
@@ -94,17 +94,17 @@ Tento dokument popisuje format mapovacich souboru v `mappings/*.json` a aktualni
 | `pv1_voltage` | PV1 voltage | `data[3]` | `0.1` | `V` |
 | `temperature_internal` | Temperature internal | `data[39]` | `1` | `degC` |
 
-### Kombinovane/odvozene entity
+### Combined/Derived Entities
 
 | Key | Name | Zdroj |
 | --- | --- | --- |
-| `yield_total` | Yield total | `read.combine: data[11] + data[12] * 65536`, pak `scale 0.1` |
-| `grid_power` | Grid power | `source: entity_state` (volitelny, konfigurovatelny) |
+| `yield_total` | Yield total | `read.combine: data[11] + data[12] * 65536`, then `scale 0.1` |
+| `grid_power` | Grid power | `source: entity_state` (optional, configurable) |
 | `grid_import_energy` | Grid import energy | `source: grid_power_derived` |
 | `grid_export_energy` | Grid export energy | `source: grid_power_derived` |
 
-## Jak pridat novou entitu
+## How To Add A New Entity
 
-1. Pridej definici do `sensors` v prislusnem mappingu.
-2. Pokud jde o novy typ `source` nebo `read`, dopln logiku v `mapping.py`.
-3. Reload integrace a over, ze senzor vraci hodnotu.
+1. Add a definition to `sensors` in the relevant mapping file.
+2. If you introduce a new `source` or `read` type, add logic in `mapping.py`.
+3. Reload the integration and verify the sensor returns the expected value.
