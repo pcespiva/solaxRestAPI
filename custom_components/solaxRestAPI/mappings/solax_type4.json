@@ -1,0 +1,178 @@
+{
+  "version": 1,
+  "name": "SolaX Type 4",
+  "match": {
+    "type": 4
+  },
+  "sensors": [
+    {
+      "key": "dongle_serial_number",
+      "name": "Dongle serial number",
+      "entity_category": "diagnostic",
+      "path": ["sn"]
+    },
+    {
+      "key": "dongle_version",
+      "name": "Dongle version",
+      "entity_category": "diagnostic",
+      "path": ["ver"]
+    },
+    {
+      "key": "inverter_nominal_power",
+      "name": "Inverter nominal power",
+      "entity_category": "diagnostic",
+      "path": ["information", 0]
+    },
+    {
+      "key": "inverter_type",
+      "name": "Inverter type",
+      "entity_category": "diagnostic",
+      "path": ["information", 1]
+    },
+    {
+      "key": "inverter_serial_number",
+      "name": "Inverter serial number",
+      "entity_category": "diagnostic",
+      "path": ["information", 2]
+    },
+    {
+      "key": "phase_type",
+      "name": "Phase type",
+      "entity_category": "diagnostic",
+      "path": ["information", 9]
+    },
+    {
+      "key": "rest_api_fetch_status",
+      "name": "REST API fetch status",
+      "entity_category": "diagnostic",
+      "source": {
+        "type": "rest_api_fetch_status"
+      }
+    },
+    {
+      "key": "yield_daily",
+      "name": "Yield daily",
+      "path": ["data", 13],
+      "scale": 0.1,
+      "unit": "kWh",
+      "device_class": "energy",
+      "state_class": "measurement"
+    },
+    {
+      "key": "ac_current",
+      "name": "AC current",
+      "path": ["data", 1],
+      "scale": 0.1,
+      "unit": "A",
+      "device_class": "current",
+      "state_class": "measurement"
+    },
+    {
+      "key": "ac_frequency",
+      "name": "AC frequency",
+      "path": ["data", 9],
+      "scale": 0.01,
+      "unit": "Hz",
+      "device_class": "frequency",
+      "state_class": "measurement"
+    },
+    {
+      "key": "ac_voltage",
+      "name": "AC voltage",
+      "path": ["data", 0],
+      "scale": 0.1,
+      "unit": "V",
+      "device_class": "voltage",
+      "state_class": "measurement"
+    },
+    {
+      "key": "ac_power",
+      "name": "AC power",
+      "path": ["data", 2],
+      "unit": "W",
+      "device_class": "power",
+      "state_class": "measurement"
+    },
+    {
+      "key": "pv1_current",
+      "name": "PV1 current",
+      "path": ["data", 5],
+      "scale": 0.1,
+      "unit": "A",
+      "device_class": "current",
+      "state_class": "measurement"
+    },
+    {
+      "key": "pv1_power",
+      "name": "PV1 power",
+      "path": ["data", 7],
+      "unit": "W",
+      "device_class": "power",
+      "state_class": "measurement"
+    },
+    {
+      "key": "pv1_voltage",
+      "name": "PV1 voltage",
+      "path": ["data", 3],
+      "scale": 0.1,
+      "unit": "V",
+      "device_class": "voltage",
+      "state_class": "measurement"
+    },
+    {
+      "key": "temperature_internal",
+      "name": "Temperature internal",
+      "path": ["data", 39],
+      "unit": "°C",
+      "device_class": "temperature",
+      "state_class": "measurement"
+    },
+    {
+      "key": "yield_total",
+      "name": "Yield total",
+      "read": {
+        "type": "combine",
+        "parts": [
+          {"path": ["data", 11]},
+          {"path": ["data", 12], "factor": 65536}
+        ],
+        "scale": 0.1
+      },
+      "unit": "kWh",
+      "device_class": "energy",
+      "state_class": "total_increasing"
+    },
+    {
+      "key": "grid_power",
+      "name": "Grid power",
+      "optional": true,
+      "configurable": true,
+      "source": {
+        "type": "entity_state"
+      },
+      "unit": "W",
+      "device_class": "power",
+      "state_class": "measurement"
+    },
+    {
+      "key": "grid_import_energy",
+      "name": "Grid import energy",
+      "source": {
+        "type": "grid_power_derived"
+      },
+      "unit": "kWh",
+      "device_class": "energy",
+      "state_class": "total_increasing"
+    },
+    {
+      "key": "grid_export_energy",
+      "name": "Grid export energy",
+      "source": {
+        "type": "grid_power_derived"
+      },
+      "unit": "kWh",
+      "device_class": "energy",
+      "state_class": "total_increasing"
+    }
+  ]
+}
